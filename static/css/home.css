@@ -1,0 +1,32 @@
+body{
+    background-color: #ced4da;
+}
+
+#favicon_png{
+    width: 30rem;
+    height: auto;
+}
+
+h1{
+    text-align: center;
+}
+
+.fade-in {
+    opacity: 0;
+    transition: opacity 2s ease-in;
+}
+.visible {
+    opacity: 1;
+}
+
+
+
+
+.left-container {
+    height: 80vh;
+}
+
+.right-container {
+    height: 80vh;
+}
+

@@ -1,0 +1,25 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>{% if object %}Edit Design{% else %}Create New Design{% endif %}</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {{ form.as_p }}
+
+        {% if object and object.image %}
+            <div>
+                <label>Current Image:</label><br>
+                <img src="{{ object.image.url }}" alt="{{ object.title }}" style="max-width: 200px; max-height: 200px;">
+            </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary">
+            {% if object %}Update Design{% else %}Create Design{% endif %}
+        </button>
+        <a href="{% url 'design-list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

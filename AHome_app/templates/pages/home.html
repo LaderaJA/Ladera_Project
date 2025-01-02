@@ -1,0 +1,30 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block css%}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock css%}
+
+{% block content %}
+    
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 left-container d-flex justify-content-center align-items-center">
+            <img src= "{% static 'images/favicon.png' %}" alt="Favicon" class="img-fluid" id="favicon_png">
+        </div>
+
+        <div class="col-md-6 right-container d-flex justify-content-center align-items-center">
+            <div id="fadeText" class="fade-in">
+                Welcome to our vibrant platform where home designers and artists connect! 
+                Explore a curated selection of unique decorations and furniture to find the perfect 
+                pieces for your space. Artists and home decor makers can showcase their creations, making 
+                it easy for you to discover inspiration and transform your house into a beautiful home. 
+                Join us in celebrating creativity and design!
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block js %}<script src="{% static 'js/scripts.js' %}"></script>{% endblock js%}
