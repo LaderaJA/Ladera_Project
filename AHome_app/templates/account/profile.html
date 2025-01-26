@@ -1,0 +1,41 @@
+{% extends 'pages/base.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock css %}
+
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mb-4">Your Profile</h1>
+    <div class="card">
+        <div class="card-header text-center">
+            <h2>{{ user.username }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="img-thumbnail" style="max-width: 200px;">
+                    {% else %}
+                        <img src="{% static 'images/default-profile.png' %}" alt="Default Profile Picture" class="img-thumbnail" style="max-width: 200px;">
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <p><strong>Full Name:</strong> {{ user.get_full_name }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Bio:</strong> {{ user.bio|default:"No bio provided." }}</p>
+                    <p><strong>Location:</strong> {{ user.location|default:"No location specified." }}</p>
+                    <p><strong>Date of Birth:</strong> {{ user.date_of_birth|date:"F j, Y"|default:"Not specified." }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <a href="{% url 'profile-edit' %}" class="btn btn-primary me-2">Edit Profile</a>
+            <a href="{% url 'profile-delete' %}" class="btn btn-danger">Delete Profile</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

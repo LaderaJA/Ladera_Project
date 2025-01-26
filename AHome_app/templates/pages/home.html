@@ -11,16 +11,46 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6 left-container d-flex justify-content-center align-items-center">
-            <img src= "{% static 'images/favicon.png' %}" alt="Favicon" class="img-fluid" id="favicon_png">
+            <div id="designCarousel" class="carousel slide" data-bs-ride="carousel">
+                <!-- Indicators/Dots -->
+                <div class="carousel-indicators">
+                    {% for design in designs %}
+                    <button type="button" data-bs-target="#designCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-current="true" aria-label="Slide {{ forloop.counter }}"></button>
+                    {% endfor %}
+                </div>
+            
+                <!-- Carousel Inner -->
+                <div class="carousel-inner">
+                    {% for design in designs %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ design.image.url }}" class="d-block w-100" alt="{{ design.title }}" style="object-fit: cover; height: 400px;">
+                        <div class="carousel-caption d-none d-md-block">
+                            <a href="{% url 'design-detail' design.pk %}" class="btn btn-light">View Design</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            
+                <!-- Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#designCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#designCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            
         </div>
 
         <div class="col-md-6 right-container d-flex justify-content-center align-items-center">
-            <div id="fadeText" class="fade-in">
-                Welcome to our vibrant platform where home designers and artists connect! 
-                Explore a curated selection of unique decorations and furniture to find the perfect 
-                pieces for your space. Artists and home decor makers can showcase their creations, making 
-                it easy for you to discover inspiration and transform your house into a beautiful home. 
-                Join us in celebrating creativity and design!
+            <div id="fadeText" class="fade-in text-center">
+                <h2 class="mb-4">Discover Your Dream Space</h2>
+                <p>
+                    Unleash creativity with unique designs and inspiring decor. From modern furniture to custom artwork, 
+                    transform your home into a masterpiece with the perfect blend of style and personality.
+                </p>
             </div>
         </div>
     </div>
