@@ -1,5 +1,6 @@
 
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -17,7 +18,7 @@ DEBUG = True
 
 AUTH_USER_MODEL = 'account.CustomUser'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['Ladera_Project.onrender.com']
 
 LOGIN_REDIRECT_URL = '/'  
 LOGOUT_REDIRECT_URL = '/login/'
@@ -116,6 +117,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_ROOT = BASE_DIR / 'media'

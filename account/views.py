@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
 from .forms import CustomUserCreationForm, ProfileForm
@@ -6,6 +7,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from .models import CustomUser
+from AHome_app.models import Follow
+from django.contrib.auth import logout
 
 class RegisterView(SuccessMessageMixin, CreateView):
     model = CustomUser
@@ -20,20 +23,29 @@ class RegisterView(SuccessMessageMixin, CreateView):
 
 
 
-class ProfileView(DetailView,LoginRequiredMixin):
+class ProfileView(LoginRequiredMixin, DetailView):
     model = CustomUser
     template_name = 'account/profile.html' 
-    context_object_name = 'user'
+    context_object_name = 'user' 
 
     def get_object(self):
-        return self.request.user
-    
-    
+        return get_object_or_404(CustomUser, pk=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile_user = self.get_object()
+
+        # Count the followers and following for this profile
+        context['followers_count'] = Follow.objects.filter(followed=profile_user).count()
+        context['following_count'] = Follow.objects.filter(follower=profile_user).count()
+        context['is_following'] = Follow.objects.filter(follower=self.request.user, followed=profile_user).exists()    
+        return context
+
 class ProfileDeleteView(LoginRequiredMixin, DeleteView):
     model = CustomUser
-    template_name = 'account/profile_confirm_delete.html'
-    success_url = reverse_lazy('home')  
-
+    template_name = 'account/profile_confirm_delete.html'  
+    def get_success_url(self):
+        logout(self.request)
     def get_object(self):
         return self.request.user
     
@@ -47,4 +59,12 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         return self.request.user  
 
     def get_success_url(self):
-        return reverse_lazy('profile')
+        return reverse_lazy('profile', kwargs={'pk': self.request.user.pk})
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile_user = self.get_object()
+        is_following = Follow.objects.filter(follower=self.request.user, followed=profile_user).exists()
+        context['is_following'] = is_following
+        return context
+    

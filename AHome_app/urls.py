@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from .views import HomePageView, DesignListView, DesignDeleteView, DesignDetailView, DesignUpdateView, DesignCreateView, CommentDeleteView, CommentUpdateView, LikeDesignView, FollowUserView, OverlayLogView, CameraFilterView
+from .views import HomePageView, DesignListView, DesignDeleteView, DesignDetailView, DesignUpdateView, DesignCreateView, UnfollowUserView, CommentDeleteView, CommentUpdateView, LikeDesignView, FollowUserView, OverlayLogView, CameraFilterView
 
 urlpatterns = [
     path('', HomePageView.as_view(), name='home'),
@@ -15,6 +15,7 @@ urlpatterns = [
     path('comment/<int:pk>/edit/', CommentUpdateView.as_view(), name='comment-edit'),
     path('design/<int:pk>/like/', LikeDesignView.as_view(), name='like-design'),
     path('user/<int:pk>/follow/', FollowUserView.as_view(), name='follow-user'),
+    path('user/<int:pk>/unfollow/', UnfollowUserView.as_view(), name='unfollow-user'),
     path('design/<int:pk>/overlay-log/', OverlayLogView.as_view(), name='overlay-log'),
     path('camera-filter/', CameraFilterView.as_view(), name='camera-filter'),
     path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),

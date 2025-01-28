@@ -23,18 +23,36 @@
                     {% endif %}
                 </div>
                 <div class="col-md-8">
-                    <p><strong>Full Name:</strong> {{ user.get_full_name }}</p>
+                    {% if request.user.is_authenticated and request.user != user %}
+                    {% if is_following %}
+                        <form method="POST" action="{% url 'unfollow-user' pk=user.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Unfollow</button>
+                        </form>
+                    {% else %}
+                        <form method="POST" action="{% url 'follow-user' pk=user.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Follow</button>
+                        </form>
+                    {% endif %}
+                    {% endif %}
+                
                     <p><strong>Email:</strong> {{ user.email }}</p>
                     <p><strong>Bio:</strong> {{ user.bio|default:"No bio provided." }}</p>
                     <p><strong>Location:</strong> {{ user.location|default:"No location specified." }}</p>
                     <p><strong>Date of Birth:</strong> {{ user.date_of_birth|date:"F j, Y"|default:"Not specified." }}</p>
+                    <p><strong>Followers:</strong> {{ followers_count }}</p>
+                    <p><strong>Following:</strong> {{ following_count }}</p>
                 </div>
             </div>
         </div>
+    {% if user == request.user %}
         <div class="card-footer text-center">
-            <a href="{% url 'profile-edit' %}" class="btn btn-primary me-2">Edit Profile</a>
-            <a href="{% url 'profile-delete' %}" class="btn btn-danger">Delete Profile</a>
+            <a href="{% url 'profile-edit' pk=user.pk %}" class="btn btn-primary me-2">Edit Profile</a>
+            <a href="{% url 'profile-delete' pk=user.pk %}" class="btn btn-danger">Delete Profile</a>
         </div>
+    {% endif %}
+    
     </div>
 </div>
 {% endblock %}

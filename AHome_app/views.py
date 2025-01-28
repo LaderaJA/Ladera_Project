@@ -10,6 +10,7 @@ from django.utils.timezone import now
 from .forms import CommentForm
 from django.views.generic.edit import FormView
 from django.views import View
+from django.contrib.auth import get_user_model
 
 
 
@@ -30,7 +31,7 @@ class DesignDetailView(DetailView):
     model = Design
     template_name = 'pages/design_detail.html'
     context_object_name = 'design'
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         design = self.get_object()
@@ -40,8 +41,11 @@ class DesignDetailView(DetailView):
             context['can_edit_or_delete'] = (
                 user == design.creator or user.is_staff or (user.is_moderator == True)
             )
+            context['has_liked'] = design.likes.filter(user=user).exists()
         else:
             context['can_edit_or_delete'] = False
+            context['has_liked'] = False
+            
         context['comment_form'] = CommentForm()
         context['comments'] = self.object.comments.all()
         return context
@@ -50,16 +54,13 @@ class DesignDetailView(DetailView):
         form = CommentForm(request.POST)
         self.object =  self.get_object()
         if form.is_valid():
-            comment = form.save( commit=False )
+            comment = form.save(commit=False)
             comment.user = request.user
             comment.design = self.object
             comment.save()
-            return redirect(reverse('design-detail', kwargs = {'pk' : self.object.pk}))
+            return redirect(reverse('design-detail', kwargs={'pk': self.object.pk}))
         return self.get(self, request, *args, **kwargs)
 
-    
-
-    
 class DesignCreateView(LoginRequiredMixin, CreateView):
     model = Design
     fields = ['title', 'description', 'image']
@@ -69,7 +70,6 @@ class DesignCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.creator = self.request.user
         return super().form_valid(form)
-    
 
 class DesignUpdateView(LoginRequiredMixin, UpdateView):
     model = Design
@@ -83,7 +83,6 @@ class DesignDeleteView(LoginRequiredMixin, DeleteView):
     model = Design
     template_name = 'pages/design_confirm_delete.html'
     success_url = reverse_lazy('design-list')  
-    
 
 class CommentUpdateView(LoginRequiredMixin, UpdateView):
     model = Comment
@@ -104,11 +103,9 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
         return Comment.objects.filter(user=self.request.user)
     
     def get_success_url(self):
-        return reverse_lazy('design-detail', kwargs = {'pk': self.object.design.pk})
-    
+        return reverse_lazy('design-detail', kwargs={'pk': self.object.design.pk})
 
 # like functions
-
 class LikeDesignView(View):
     def post(self, request, pk):
         design = get_object_or_404(Design, pk=pk)
@@ -120,19 +117,37 @@ class LikeDesignView(View):
         return redirect('design-detail', pk=pk)
 
 # follow functions
+class FollowUserView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        User = get_user_model()
+        user_to_follow = get_object_or_404(User, pk=pk)
 
-class FollowUserView(LoginRequiredMixin, CreateView):
-    def post(self, request, *args, **kwargs):
-        followed_user = get_object_or_404(settings.AUTH_USER_MODEL, id=kwargs['pk'])
-        Follow.objects.get_or_create(follower=request.user, followed=followed_user)
-        return JsonResponse({"status": "followed"})
+        if request.user != user_to_follow:
+            follow, created = Follow.objects.get_or_create(follower=request.user, followed=user_to_follow)
+            
+            if not created:  
+                follow.delete()
+
+        return redirect('profile', pk=user_to_follow.pk )
+
+class UnfollowUserView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        User = get_user_model()
+        user_to_unfollow = get_object_or_404(User, pk=pk)
+
+        if request.user != user_to_unfollow:
+            follow = Follow.objects.filter(follower=request.user, followed=user_to_unfollow).first()
+            
+            if follow:
+                follow.delete()
+
+        return redirect('profile', pk=user_to_unfollow.pk)
 
 class OverlayLogView(LoginRequiredMixin, CreateView):
     def post(self, request, *args, **kwargs):
         design = get_object_or_404(Design, id=kwargs['pk'])
         OverlayLog.objects.create(user=request.user, design=design, applied_at=now())
         return JsonResponse({"status": "Overlay logged successfully."})
-
 
 # camera
 class CameraFilterView(TemplateView):
@@ -142,8 +157,3 @@ class CameraFilterView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['designs'] = Design.objects.all()
         return context
-
-
-# User profile
-
-#changes
