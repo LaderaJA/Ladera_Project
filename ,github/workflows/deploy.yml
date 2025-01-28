@@ -1,44 +1,44 @@
-name: Deploy Django to Render
+name: Pre-Deployment Tasks
 
 on:
   push:
     branches:
-      - main  # Trigger the deployment on push to the main branch
+      - main  # Trigger workflow on push to the main branch
 
 jobs:
-  deploy:
+  pre-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the code from the repository
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Step 2: Set up Python 3.12.3
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.12.3'
+      # Step 2: Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12.3'
 
-    # Step 3: Install dependencies
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    # Step 4: Run collectstatic to collect static files
-    - name: Run collectstatic
-      run: |
-        python manage.py collectstatic --noinput  # Collect static files
+      # Step 4: Run collectstatic
+      - name: Run collectstatic
+        run: |
+          python manage.py collectstatic --noinput
 
-    # Step 5: Commit and push any changes (if new static files are generated)
-    - name: Commit new static files
-      run: |
-        git add .
-        git commit -m "Update static files" || echo "No changes to commit"
-        git push origin main
+      # Step 5: Commit changes (if new static files are generated)
+      - name: Commit new static files
+        run: |
+          git add .
+          git commit -m "Update static files" || echo "No changes to commit"
+          git push origin main
 
-    # Step 6: Trigger Render deployment via webhook
-    - name: Trigger Render deployment
-      run: |
-        curl -X POST "https://api.render.com/deploy/srv-cuc5jjdumphs73dtmva0?key=fY31gqPujk4"
+      # Step 6: Trigger Render deployment (this is not strictly necessary if Render auto-deploys)
+      - name: Trigger Render deployment
+        run: |
+          curl -X POST "https://api.render.com/deploy/srv-cuc5jjdumphs73dtmva0?key=fY31gqPujk4"
