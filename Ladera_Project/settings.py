@@ -18,7 +18,7 @@ DEBUG = True
 
 AUTH_USER_MODEL = 'account.CustomUser'
 
-ALLOWED_HOSTS = ['Ladera_Project.onrender.com']
+ALLOWED_HOSTS = ['Ladera-Project.onrender.com']
 
 LOGIN_REDIRECT_URL = '/'  
 LOGOUT_REDIRECT_URL = '/login/'
