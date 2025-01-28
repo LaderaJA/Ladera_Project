@@ -16,8 +16,8 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.12.3' 
-        
+        python-version: '3.12.3'  # Your Python version
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -26,10 +26,3 @@ jobs:
     - name: Run collectstatic
       run: |
         python manage.py collectstatic --noinput  # Collect static files
-
-    - name: Deploy to Render
-      run: |
-        curl -fsSL https://render.com/deploy | bash  # This deploys to Render
-      env:
-        RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}  # Add your Render API key as a secret in GitHub
-
